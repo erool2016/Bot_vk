@@ -39,6 +39,12 @@ def add_users(user_id: int):
   session.query(Users).filter(Users.user_id == user_id).delete()
   session.commit()
 
+def show_users():
+  '''вывод пользователей'''
+  
+  q = session.query(Users).all
+  return q
+
 def add_favorites(user_id: int, user_id_fav: int):
   '''добавление пользователя в избранные'''
 
