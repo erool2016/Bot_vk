@@ -1,6 +1,7 @@
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from models_bd import Users, Favorites, Black_list, create_tables
+from models_bd import Users, create_tables
+from models_bd import Favorites, Black_list
 import configparser
 
 
@@ -33,17 +34,24 @@ def add_users(user_id: int, name: str, surname: str,
   )
   session.commit()
 
-def add_users(user_id: int):
+def delete_users(user_id: int):
   '''удаление пользователей'''
 
   session.query(Users).filter(Users.user_id == user_id).delete()
   session.commit()
 
-def show_users():
-  '''вывод пользователей'''
-  
-  q = session.query(Users).all
-  return q
+def show_users(age_low: int, age_high: int, gender: str,
+               city: str, photos: str):
+  '''вывод пользователей по критериям'''
+
+  q = session.query(Users).filter(
+    (age_low <= Users.age <= age_high),
+    Users.gender == gender,
+    Users.city == city,
+    Users.photos == photos
+    )
+
+  return q.all()
 
 def add_favorites(user_id: int, user_id_fav: int):
   '''добавление пользователя в избранные'''
@@ -55,7 +63,7 @@ def delete_favorites(user_id: int, user_id_fav: int):
   '''удаление пользователя из избранных'''
 
   session.query(Favorites).filter(
-    Favorites.user_id == user_id and
+    Favorites.user_id == user_id,
     Favorites.user_id_fav == user_id_fav
     ).delete()
   session.commit()
@@ -88,7 +96,7 @@ def delete_black_list(user_id: int, user_id_bl: int):
   '''удаление пользователя из черного списка'''
 
   session.query(Black_list).filter(
-    Black_list.user_id == user_id and
+    Black_list.user_id == user_id,
     Black_list.user_id_bl == user_id_bl
     ).delete()
   session.commit()
@@ -109,6 +117,6 @@ def show_black_list(user_id: int):
       user_id == user_id
       )
 
-  return q
+  return q.all()
 
 session.close()

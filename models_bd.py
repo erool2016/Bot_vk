@@ -24,20 +24,22 @@ class Favorites(Base):
   __tablename__ = "Favorites"
 
   id = sq.Column(sq.Integer, primary_key=True)
-  user_id = sq.Column(sq.Integer, sq.ForeignKey("Users.id"), nullable=False)
-  user_id_fav = sq.Column(sq.Integer, sq.ForeignKey("Users.id"), nullable=False)
+  user_id = sq.Column(sq.Integer)
+  user_id_fav = sq.Column(sq.Integer, sq.ForeignKey("Users.user_id"))
 
-  users_fav = relationship(Users, backref="Favorites")
+  users_fav = relationship(Users, backref='Favorites')
 
+  def __str__(self):
+    return f'{self.user_id}, {self.user_id_fav}'
 
 class Black_list(Base):
   __tablename__ = "Black_list"
 
   id = sq.Column(sq.Integer, primary_key=True)
-  user_id = sq.Column(sq.Integer, sq.ForeignKey("Users.id"), nullable=False)
-  user_id_bl = sq.Column(sq.Integer, sq.ForeignKey("Users.id"), nullable=False)
+  user_id = sq.Column(sq.Integer)
+  user_id_bl = sq.Column(sq.Integer, sq.ForeignKey("Users.user_id"), nullable=False)
 
-  users_bl = relationship(Users, backref="Black_list")
+  users_bl = relationship(Users, backref='Black_list')
 
 
 def create_tables(engine):
