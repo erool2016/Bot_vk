@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from models_bd import Users, create_tables
-from models_bd import Favorites, Black_list
+from models_bd import Favorites, Black_list, Viewed_users
 import configparser
 
 
@@ -40,18 +40,32 @@ def delete_users(user_id: int):
   session.query(Users).filter(Users.user_id == user_id).delete()
   session.commit()
 
-def show_users(age_low: int, age_high: int, gender: str,
-               city: str, photos: str):
+def show_users(user_id: int, age_low: int, age_high: int, gender: str,
+               city: str):
   '''вывод пользователей по критериям'''
 
-  q = session.query(Users).filter(
-    (age_low <= Users.age <= age_high),
-    Users.gender == gender,
-    Users.city == city,
-    Users.photos == photos
-    )
+  q = session.query(
+    Users.name,
+    Users.surname,
+    Users.age,
+    Users.gender,
+    Users.city,
+    Users.photos
+    ).filter(
+      Users.user_id == user_id,
+      Users.age >= age_low,
+      Users.age <= age_high,
+      Users.gender == gender,
+      Users.city == city
+      )
 
-  return q.all()
+  return q
+
+def add_viewed_users(user_id: int, user_id_view: int):
+  '''добвление пользователей в просмотренные'''
+
+  session.add(Viewed_users(user_id=user_id, user_id_view=user_id_view))
+  session.commit()
 
 def add_favorites(user_id: int, user_id_fav: int):
   '''добавление пользователя в избранные'''
@@ -80,10 +94,8 @@ def show_favorites(user_id: int):
     Users.photos
     ).join(
       Favorites.users_fav
-      ).filter(
-        user_id == user_id
-        )
-  
+      ).filter(Favorites.user_id == user_id)
+
   return q
 
 def add_black_list(user_id: int, user_id_bl: int):
@@ -113,10 +125,44 @@ def show_black_list(user_id: int):
   Users.photos
   ).join(
     Black_list.users_bl
-    ).filter(
-      user_id == user_id
-      )
+    ).filter(Black_list.user_id == user_id)
 
-  return q.all()
+  return q
+
+def chek_user(user_id: int, age_low: int, age_high: int, gender: str,
+              city: str):
+  '''выводит всех, кроме просмотренных, избранных, чс и себя'''
+
+  list_us = []
+  exceptions = []
+
+  q_viewed_users = session.query(Viewed_users.user_id_view).filter(
+    Viewed_users.user_id == user_id
+    )
+  q_favorites = session.query(Favorites.user_id_fav).filter(
+    Favorites.user_id == user_id
+    )
+  q_black_list = session.query(Black_list.user_id_bl).filter(
+    Black_list.user_id == user_id
+    )
+  q_users = session.query(Users.user_id).all()
+
+  list_users_ex = [q_viewed_users, q_favorites, q_black_list]
+
+  for q in list_users_ex:
+    for q_1 in q.all():
+      for q_2 in q_1:
+        exceptions.append(q_2)
+
+  for q in q_users:
+    for q_1 in q:
+      list_us.append(q_1)
+
+  show_list = [x for x in list_us if x not in exceptions]
+
+  for id in show_list:
+    if id != user_id:
+      for user in show_users(id, age_low, age_high, gender, city):
+        return user
 
 session.close()
