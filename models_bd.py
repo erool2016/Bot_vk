@@ -64,5 +64,5 @@ class Black_list(Base):
     return f'{self.user_id}, {self.user_id_bl}'
 
 def create_tables(engine):
-  # Base.metadata.drop_all(engine) # удаление таблиц
+  Base.metadata.drop_all(engine) # удаление таблиц
   Base.metadata.create_all(engine) # создание таблиц

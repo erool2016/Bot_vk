@@ -129,40 +129,49 @@ def show_black_list(user_id: int):
 
   return q
 
-def chek_user(user_id: int, age_low: int, age_high: int, gender: str,
-              city: str):
-  '''выводит всех, кроме просмотренных, избранных, чс и себя'''
+# def check_users(user_id: int, age_low: int, age_high: int, gender: str,
+#               city: str):
+#   '''выводит всех, кроме просмотренных, избранных, чс и себя'''
 
-  list_us = []
-  exceptions = []
+#   list_us = []
+#   exceptions = []
+
+#   q_viewed_users = session.query(Viewed_users.user_id_view).filter(
+#     Viewed_users.user_id == user_id
+#    )
+#   q_favorites = session.query(Favorites.user_id_fav).filter(
+#     Favorites.user_id == user_id
+#    )
+#   q_black_list = session.query(Black_list.user_id_bl).filter(
+#     Black_list.user_id == user_id
+#    )
+#   q_users = session.query(Users.user_id).all()
+
+#   list_users_ex = [q_viewed_users, q_favorites, q_black_list]
+
+#   for q in list_users_ex:
+#     for q_1 in q.all():
+#       for q_2 in q_1:
+#         exceptions.append(q_2)
+
+#   for q in q_users:
+#     for q_1 in q:
+#       list_us.append(q_1)
+
+#   show_list = [x for x in list_us if x not in exceptions]
+
+#   for id in show_list:
+#     if id != user_id:
+#       for user in show_users(id, age_low, age_high, gender, city):
+#         return user
+
+def check_users_view(user_id: int):
+  '''проверяет, есть ли user_id в просмотренных'''
 
   q_viewed_users = session.query(Viewed_users.user_id_view).filter(
-    Viewed_users.user_id == user_id
-    )
-  q_favorites = session.query(Favorites.user_id_fav).filter(
-    Favorites.user_id == user_id
-    )
-  q_black_list = session.query(Black_list.user_id_bl).filter(
-    Black_list.user_id == user_id
-    )
-  q_users = session.query(Users.user_id).all()
+    Viewed_users.user_id_view == user_id
+  ).all()
 
-  list_users_ex = [q_viewed_users, q_favorites, q_black_list]
-
-  for q in list_users_ex:
-    for q_1 in q.all():
-      for q_2 in q_1:
-        exceptions.append(q_2)
-
-  for q in q_users:
-    for q_1 in q:
-      list_us.append(q_1)
-
-  show_list = [x for x in list_us if x not in exceptions]
-
-  for id in show_list:
-    if id != user_id:
-      for user in show_users(id, age_low, age_high, gender, city):
-        return user
+  return bool(q_viewed_users)
 
 session.close()
