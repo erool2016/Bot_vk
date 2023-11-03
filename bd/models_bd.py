@@ -10,20 +10,22 @@ class Users(Base):
 
   id = sq.Column(sq.Integer, primary_key=True)
   user_id = sq.Column(sq.Integer, unique=True)
-  name = sq.Column(sq.String(length=40))
-  surname = sq.Column(sq.String(length=40))
-  age = sq.Column(sq.Integer)
-  gender = sq.Column(sq.String(length=20))
-  city = sq.Column(sq.String(length=40))
-  photos = sq.Column(sq.String(length=300), unique=True)
+  first_name = sq.Column(sq.String(length=2000))
+  last_name = sq.Column(sq.String(length=2000))
+  href_us=sq.Column(sq.String(length=2000), unique=True)
+  bdate = sq.Column(sq.String(length=2000))
+  sex = sq.Column(sq.String(length=2000))
+  city = sq.Column(sq.String(length=2000))
+  photos = sq.Column(sq.String(length=2000), unique=True)
 
   def __str__(self):
     return (f'{self.id}, '
             f'{self.user_id}, '
-            f'{self.name}, '
-            f'{self.surname}, '
-            f'{self.age}, '
-            f'{self.gender}, '
+            f'{self.first_name}, '
+            f'{self.last_name}, '
+            f'{self.href_us} '
+            f'{self.bdate}, '
+            f'{self.sex}, '
             f'{self.city}, '
             f'{self.photos}')
 
